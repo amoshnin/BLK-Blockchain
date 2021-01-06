@@ -1,5 +1,5 @@
 import { GENESIS_DATA } from "./config"
-import cryptoHash from "./crypto-hash"
+import cryptoHash from "./utils/crypto-hash"
 
 export interface IBlockData {
   timestamp: number
@@ -20,7 +20,7 @@ export default class Block {
     return new this(GENESIS_DATA)
   }
 
-  static minedBlock({ lastBlock, data }: IMineBlockInput) {
+  static mineBlock({ lastBlock, data }: IMineBlockInput) {
     const input = {
       data,
       timestamp: Date.now(),

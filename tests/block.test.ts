@@ -1,5 +1,5 @@
 import Block, { IBlockData } from "../src/block"
-import cryptoHash from "../src/crypto-hash"
+import cryptoHash from "../src/utils/crypto-hash"
 import { GENESIS_DATA } from "../src/config"
 
 describe("BlockTest", () => {
@@ -29,10 +29,9 @@ describe("BlockTest", () => {
   })
 
   describe("minedBlock()", () => {
-    const lastBlock = Block.genesis().props
     const data = ["mined data"]
-
-    const minedBlock = Block.minedBlock({ lastBlock, data })
+    const lastBlock = Block.genesis().props
+    const minedBlock = Block.mineBlock({ lastBlock, data })
 
     it("returns a Block instance", () => {
       expect(minedBlock instanceof Block).toBe(true)
