@@ -1,4 +1,5 @@
 import Block, { IBlockData } from "../src/block"
+import cryptoHash from "../src/crypto-hash"
 import { GENESIS_DATA } from "../src/config"
 
 describe("BlockTest", () => {
@@ -47,6 +48,16 @@ describe("BlockTest", () => {
 
     it("sets a timestamp", () => {
       expect(minedBlock.props.timestamp).not.toEqual(undefined)
+    })
+
+    it("creates a SHA-256 `hash` based on proper inputs", () => {
+      expect(minedBlock.props.hash).toEqual(
+        cryptoHash({
+          timestamp: minedBlock.props.timestamp,
+          lastHash: lastBlock.lastHash,
+          data,
+        })
+      )
     })
   })
 })
