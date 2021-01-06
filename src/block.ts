@@ -1,12 +1,16 @@
-import { time } from "console"
+import { GENESIS_DATA } from "./config"
 
-interface IProps {
+export interface IBlockData {
   timestamp: number
   lastHash: string
   hash: string
-  data: any
+  data: Array<string>
 }
 
 export default class Block {
-  constructor(readonly props: IProps) {}
+  constructor(readonly props: IBlockData) {}
+
+  static genesis() {
+    return new Block(GENESIS_DATA)
+  }
 }
