@@ -14,8 +14,8 @@ export default class Blockchain {
     for (let i = 1; i < chain.length; i++) {
       const { hash, ...rest } = chain[i]
 
-      const previousBlockHash = chain[i - 1].hash
-      if (previousBlockHash !== rest.lastHash) return false
+      const prevBlockHash = chain[i - 1].hash
+      if (prevBlockHash !== rest.lastHash) return false
 
       const validatedHash = cryptoHash(...Object.values(rest))
       if (hash !== validatedHash) return false
@@ -26,13 +26,16 @@ export default class Blockchain {
 
   replaceChain(chain: Array<IBlockData>) {
     if (chain.length <= this.chain.length) {
+      console.error("Incoming chain must be longer")
       return
     }
 
     if (!Blockchain.isValidChain(chain)) {
+      console.error("The chain income must be valid")
       return
     }
 
+    console.log("Replacing chain with", chain)
     this.chain = chain
   }
 

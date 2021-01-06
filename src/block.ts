@@ -6,6 +6,8 @@ export interface IBlockData {
   lastHash: string
   hash: string
   data: string
+  nonce: number
+  difficulty: number
 }
 
 interface IMineBlockInput {

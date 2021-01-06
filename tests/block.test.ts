@@ -8,12 +8,14 @@ describe("BlockTest", () => {
     lastHash: "dsa",
     hash: "dsadsa",
     data: "data",
+    nonce: 1,
+    difficulty: 1,
   }
 
   const block = new Block(input)
 
-  it("has all properties (timestamp, lastHash, hash, data)", () => {
-    expect(block).toEqual(input)
+  it("has all properties", () => {
+    expect(JSON.stringify(block)).toEqual(JSON.stringify(input))
   })
 
   describe("genesis()", () => {
@@ -50,13 +52,17 @@ describe("BlockTest", () => {
     })
 
     it("creates a SHA-256 `hash` based on proper inputs", () => {
-      const input = {
+      const input: IBlockData = {
         timestamp: minedBlock.timestamp,
         hash: lastBlock.hash,
         data,
+        nonce: minedBlock.nonce,
+        difficulty: minedBlock.difficulty,
       }
 
       expect(minedBlock.hash).toEqual(cryptoHash(...Object.values(input)))
     })
+
+    it("sets a `hash` that matches the difficulty criteria", () => {})
   })
 })
