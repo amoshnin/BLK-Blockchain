@@ -3,17 +3,17 @@ import cryptoHash from "../src/utils/crypto-hash"
 import { GENESIS_DATA } from "../src/config"
 
 describe("BlockTest", () => {
-  const props: IBlockData = {
+  const input: IBlockData = {
     timestamp: Date.now(),
     lastHash: "dsa",
     hash: "dsadsa",
-    data: ["data"],
+    data: "data",
   }
 
-  const block = new Block(props)
+  const block = new Block(input)
 
   it("has all properties (timestamp, lastHash, hash, data)", () => {
-    expect(block.props).toEqual(props)
+    expect(block).toEqual(input)
   })
 
   describe("genesis()", () => {
@@ -24,13 +24,13 @@ describe("BlockTest", () => {
     })
 
     it("returns the genesis data", () => {
-      expect(genesisBlock).toEqual({ props: GENESIS_DATA })
+      expect(genesisBlock).toEqual(GENESIS_DATA)
     })
   })
 
   describe("minedBlock()", () => {
-    const data = ["mined data"]
-    const lastBlock = Block.genesis().props
+    const data = "mined data"
+    const lastBlock = Block.genesis()
     const minedBlock = Block.mineBlock({ lastBlock, data })
 
     it("returns a Block instance", () => {
@@ -38,25 +38,25 @@ describe("BlockTest", () => {
     })
 
     it("sets the `lastHash` to be the `hash` of the last block", () => {
-      expect(minedBlock.props.lastHash).toEqual(lastBlock.hash)
+      expect(minedBlock.lastHash).toEqual(lastBlock.hash)
     })
 
     it("sets the `data`", () => {
-      expect(minedBlock.props.data).toEqual(data)
+      expect(minedBlock.data).toEqual(data)
     })
 
     it("sets a timestamp", () => {
-      expect(minedBlock.props.timestamp).not.toEqual(undefined)
+      expect(minedBlock.timestamp).not.toEqual(undefined)
     })
 
     it("creates a SHA-256 `hash` based on proper inputs", () => {
-      expect(minedBlock.props.hash).toEqual(
-        cryptoHash({
-          timestamp: minedBlock.props.timestamp,
-          lastHash: lastBlock.lastHash,
-          data,
-        })
-      )
+      const input = {
+        timestamp: minedBlock.timestamp,
+        hash: lastBlock.hash,
+        data,
+      }
+
+      expect(minedBlock.hash).toEqual(cryptoHash(...Object.values(input)))
     })
   })
 })

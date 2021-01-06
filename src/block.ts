@@ -5,29 +5,38 @@ export interface IBlockData {
   timestamp: number
   lastHash: string
   hash: string
-  data: Array<string>
+  data: string
 }
 
 interface IMineBlockInput {
   lastBlock: IBlockData
-  data: Array<string>
+  data: string
 }
 
 export default class Block {
-  constructor(readonly props: IBlockData) {}
+  data = ""
+  hash = ""
+  lastHash = ""
+  timestamp: number = 0
+
+  constructor({ data, hash, lastHash, timestamp }: IBlockData) {
+    this.data = data
+    this.hash = hash
+    this.lastHash = lastHash
+    this.timestamp = timestamp
+  }
 
   static genesis(): Block {
     return new this(GENESIS_DATA)
   }
 
   static mineBlock({ lastBlock, data }: IMineBlockInput) {
-    const input = {
+    const hash = cryptoHash(data, Date.now(), lastBlock.hash)
+    return new this({
       data,
       timestamp: Date.now(),
       lastHash: lastBlock.hash,
-    }
-
-    const hash = cryptoHash(input)
-    return new this({ ...input, hash })
+      hash,
+    })
   }
 }

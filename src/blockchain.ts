@@ -1,14 +1,45 @@
-import Block from "./block"
+import Block, { IBlockData } from "./block"
+import cryptoHash from "./utils/crypto-hash"
 
 export default class Blockchain {
-  chain = [Block.genesis()]
+  chain: Array<IBlockData> = [Block.genesis()]
 
   constructor() {}
+
+  static isValidChain(chain: Array<IBlockData>) {
+    if (JSON.stringify(chain[0]) !== JSON.stringify(Block.genesis())) {
+      return false
+    }
+
+    for (let i = 1; i < chain.length; i++) {
+      const { hash, ...rest } = chain[i]
+
+      const previousBlockHash = chain[i - 1].hash
+      if (previousBlockHash !== rest.lastHash) return false
+
+      const validatedHash = cryptoHash(...Object.values(rest))
+      if (hash !== validatedHash) return false
+    }
+
+    return true
+  }
+
+  replaceChain(chain: Array<IBlockData>) {
+    if (chain.length <= this.chain.length) {
+      return
+    }
+
+    if (!Blockchain.isValidChain(chain)) {
+      return
+    }
+
+    this.chain = chain
+  }
 
   addBlock({ data }: { data: any }) {
     const newBlock = Block.mineBlock({
       data,
-      lastBlock: this.chain[this.chain.length - 1].props,
+      lastBlock: this.chain[this.chain.length - 1],
     })
 
     this.chain.push(newBlock)
