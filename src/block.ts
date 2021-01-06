@@ -10,7 +10,22 @@ export interface IBlockData {
 export default class Block {
   constructor(readonly props: IBlockData) {}
 
-  static genesis() {
-    return new Block(GENESIS_DATA)
+  static genesis(): Block {
+    return new this(GENESIS_DATA)
+  }
+
+  static minedBlock({
+    lastBlock,
+    data,
+  }: {
+    lastBlock: IBlockData
+    data: Array<string>
+  }) {
+    return new this({
+      data,
+      timestamp: Date.now(),
+      lastHash: lastBlock.hash,
+      hash: "dsadsa",
+    })
   }
 }
