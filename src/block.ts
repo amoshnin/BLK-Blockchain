@@ -1,4 +1,4 @@
-import { GENESIS_DATA } from "./config"
+import { GENESIS_DATA, MINE_RATE } from "./config"
 import cryptoHash from "./utils/crypto-hash"
 
 export interface IBlockData {
@@ -15,17 +15,33 @@ interface IMineBlockInput {
   data: string
 }
 
+interface IDifficultyInput {
+  originalBlock: IBlockData
+  timestamp: number
+}
+
 export default class Block {
   data = ""
   hash = ""
   lastHash = ""
   timestamp: number = 0
+  difficulty: number = 0
+  nonce: number = 0
 
-  constructor({ data, hash, lastHash, timestamp }: IBlockData) {
+  constructor({
+    data,
+    hash,
+    lastHash,
+    timestamp,
+    difficulty,
+    nonce,
+  }: IBlockData) {
     this.data = data
     this.hash = hash
     this.lastHash = lastHash
     this.timestamp = timestamp
+    this.difficulty = difficulty
+    this.nonce = nonce
   }
 
   static genesis(): Block {
@@ -33,12 +49,40 @@ export default class Block {
   }
 
   static mineBlock({ lastBlock, data }: IMineBlockInput) {
-    const hash = cryptoHash(data, Date.now(), lastBlock.hash)
+    const { hash: lastBlockHash, difficulty: lastBlockDifficulty } = lastBlock
+    let difficulty = lastBlockDifficulty
+    let hash,
+      timestamp,
+      nonce = 0
+
+    do {
+      nonce++
+      timestamp = Date.now()
+      difficulty = Block.adjustDifficulty({
+        originalBlock: lastBlock,
+        timestamp,
+      })
+      hash = cryptoHash(data, timestamp, lastBlockHash, nonce, difficulty)
+    } while (hash.substring(0, difficulty) !== "0".repeat(difficulty))
+
     return new this({
       data,
-      timestamp: Date.now(),
-      lastHash: lastBlock.hash,
+      timestamp,
+      difficulty,
+      nonce,
       hash,
+      lastHash: lastBlockHash,
     })
+  }
+
+  static adjustDifficulty({ originalBlock, timestamp }: IDifficultyInput) {
+    const { difficulty } = originalBlock
+
+    if (difficulty < 1) return 1
+    if (timestamp - originalBlock.timestamp > MINE_RATE) {
+      return difficulty - 1
+    } else {
+      return difficulty + 1
+    }
   }
 }

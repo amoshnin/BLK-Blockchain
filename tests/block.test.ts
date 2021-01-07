@@ -1,21 +1,42 @@
-import Block, { IBlockData } from "../src/block"
-import cryptoHash from "../src/utils/crypto-hash"
-import { GENESIS_DATA } from "../src/config"
+import Block from "../src/block"
+import { GENESIS_DATA, MINE_RATE } from "../src/config"
 
 describe("BlockTest", () => {
-  const input: IBlockData = {
-    timestamp: Date.now(),
-    lastHash: "dsa",
-    hash: "dsadsa",
-    data: "data",
+  const { timestamp, lastHash, hash, data, nonce, difficulty } = {
+    timestamp: 2000,
+    lastHash: "foo-hash",
+    hash: "bar-hash",
+    data: "data boilter",
     nonce: 1,
-    difficulty: 1,
+    difficulty: 4,
   }
+  const block = new Block({
+    timestamp,
+    lastHash,
+    hash,
+    data,
+    nonce,
+    difficulty,
+  })
 
-  const block = new Block(input)
+  describe("adjustDifficulty", () => {
+    it("raises difficulty for quickly mined block", () => {
+      expect(
+        Block.adjustDifficulty({
+          originalBlock: block,
+          timestamp: block.timestamp + MINE_RATE - 100,
+        })
+      ).toEqual(block.difficulty + 1)
+    })
 
-  it("has all properties", () => {
-    expect(JSON.stringify(block)).toEqual(JSON.stringify(input))
+    it("lowers difficulty for slowly mined block", () => {
+      expect(
+        Block.adjustDifficulty({
+          originalBlock: block,
+          timestamp: block.timestamp + MINE_RATE + 100,
+        })
+      ).toEqual(block.difficulty - 1)
+    })
   })
 
   describe("genesis()", () => {
@@ -30,7 +51,7 @@ describe("BlockTest", () => {
     })
   })
 
-  describe("minedBlock()", () => {
+  describe("mineBlock()", () => {
     const data = "mined data"
     const lastBlock = Block.genesis()
     const minedBlock = Block.mineBlock({ lastBlock, data })
@@ -51,18 +72,28 @@ describe("BlockTest", () => {
       expect(minedBlock.timestamp).not.toEqual(undefined)
     })
 
-    it("creates a SHA-256 `hash` based on proper inputs", () => {
-      const input: IBlockData = {
-        timestamp: minedBlock.timestamp,
-        hash: lastBlock.hash,
-        data,
-        nonce: minedBlock.nonce,
-        difficulty: minedBlock.difficulty,
-      }
+    it("creates a SHA-256 `hash` based on proper inputs", () => {})
 
-      expect(minedBlock.hash).toEqual(cryptoHash(...Object.values(input)))
+    it("sets a `hash` that matches the difficulty criteria", () => {
+      expect(minedBlock.hash.substring(0, minedBlock.difficulty)).toEqual(
+        "0".repeat(minedBlock.difficulty)
+      )
     })
 
-    it("sets a `hash` that matches the difficulty criteria", () => {})
+    it("adjusts the difficulty", () => {
+      const possibleResults = [
+        lastBlock.difficulty + 1,
+        lastBlock.difficulty - 1,
+      ]
+
+      expect(possibleResults.includes(minedBlock.difficulty)).toBe(true)
+    })
+
+    it("has a lower limit of 1", () => {
+      block.difficulty = -1
+      expect(
+        Block.adjustDifficulty({ originalBlock: block, timestamp: Date.now() })
+      ).toEqual(1)
+    })
   })
 })
