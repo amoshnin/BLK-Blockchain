@@ -4,14 +4,16 @@ import bodyParser from "body-parser"
 
 // # COMPONENTS IMPORTS //
 import Blockchain from "../blockchain/blockchain"
+import PubSub from "./pubsub"
 
 // # EXTRA IMPORTS //
+const app = express()
+app.use(bodyParser.json())
 
 /////////////////////////////////////////////////////////////////////////////
 
-const app = express()
-app.use(bodyParser.json())
 const blockchain = new Blockchain()
+const pubsub = new PubSub({ blockchain })
 
 app.get(`/api/blocks`, (req, res) => {
   res.json(blockchain.chain)
