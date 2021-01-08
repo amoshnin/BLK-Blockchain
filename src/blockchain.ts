@@ -13,12 +13,15 @@ export default class Blockchain {
 
     for (let i = 1; i < chain.length; i++) {
       const { hash, ...rest } = chain[i]
+      const lastDifficulty = chain[i - 1].difficulty
 
       const prevBlockHash = chain[i - 1].hash
       if (prevBlockHash !== rest.lastHash) return false
 
       const validatedHash = cryptoHash(...Object.values(rest))
       if (hash !== validatedHash) return false
+
+      if (Math.abs(lastDifficulty - rest.difficulty) > 1) return false
     }
 
     return true

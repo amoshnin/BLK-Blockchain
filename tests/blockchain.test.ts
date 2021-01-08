@@ -1,5 +1,7 @@
 import Blockchain from "../src/blockchain"
 import Block from "../src/block"
+import cryptoHash from "../src/utils/crypto-hash"
+import { time } from "console"
 
 describe("Blockchain Test", () => {
   let blockchain = new Blockchain()
@@ -113,6 +115,30 @@ describe("Blockchain Test", () => {
       describe("and the chain contains a block with an invalid fied", () => {
         it("returns false", () => {
           blockchain.chain[2].data = "some-bad-and-evil-data"
+          expect(Blockchain.isValidChain(blockchain.chain)).toBe(false)
+        })
+      })
+
+      describe("and the chain contains a block with a jumped difficulty", () => {
+        it("returns false", () => {
+          const lastBlock = blockchain.chain[blockchain.chain.length - 1]
+          const lastHash = lastBlock.hash
+          const timestamp = Date.now()
+          const nonce = 0
+          const data = ""
+          const difficulty = lastBlock.difficulty - 3
+
+          const args = {
+            timestamp,
+            lastHash,
+            nonce,
+            difficulty,
+            data,
+          }
+          const hash = cryptoHash(...Object.values(args))
+          const badBlock = new Block({ ...args, hash })
+          blockchain.chain.push(badBlock)
+
           expect(Blockchain.isValidChain(blockchain.chain)).toBe(false)
         })
       })
