@@ -1,4 +1,6 @@
 import Block from "../src/block"
+// @ts-ignore
+import hexToBinary from "hex-to-binary"
 import { GENESIS_DATA, MINE_RATE } from "../src/config"
 
 describe("BlockTest", () => {
@@ -75,9 +77,10 @@ describe("BlockTest", () => {
     it("creates a SHA-256 `hash` based on proper inputs", () => {})
 
     it("sets a `hash` that matches the difficulty criteria", () => {
-      expect(minedBlock.hash.substring(0, minedBlock.difficulty)).toEqual(
-        "0".repeat(minedBlock.difficulty)
-      )
+      console.log(hexToBinary(minedBlock.hash))
+      expect(
+        hexToBinary(minedBlock.hash).substring(0, minedBlock.difficulty)
+      ).toEqual("0".repeat(minedBlock.difficulty))
     })
 
     it("adjusts the difficulty", () => {

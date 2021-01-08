@@ -1,5 +1,7 @@
 import { GENESIS_DATA, MINE_RATE } from "./config"
 import cryptoHash from "./utils/crypto-hash"
+// @ts-ignore
+import hexToBinary from "hex-to-binary"
 
 export interface IBlockData {
   timestamp: number
@@ -63,7 +65,9 @@ export default class Block {
         timestamp,
       })
       hash = cryptoHash(data, timestamp, lastBlockHash, nonce, difficulty)
-    } while (hash.substring(0, difficulty) !== "0".repeat(difficulty))
+    } while (
+      hexToBinary(hash).substring(0, difficulty) !== "0".repeat(difficulty)
+    )
 
     return new this({
       data,
