@@ -28,12 +28,12 @@ app.post("/api/mine", (req, res) => {
   res.redirect(`/api/blocks`)
 })
 
-let port = 3000
+/////////////////////////////////////////////////////////////////////////////
 
+let port = 3000
 if (process.env.GENERATE_PEER_PORT === "true") {
   port = port + Math.ceil(Math.random() * 1000)
 }
-
 app.listen(port, () => {
   console.log(`Listening on localhost localhost:${port}`)
 })
