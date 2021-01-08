@@ -1,5 +1,6 @@
-import Block from "../src/blockchain/block"
+// @ts-ignore
 import hexToBinary from "hex-to-binary"
+import Block from "../src/blockchain/block"
 import { GENESIS_DATA, MINE_RATE } from "../src/blockchain/config"
 
 describe("BlockTest", () => {

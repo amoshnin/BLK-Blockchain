@@ -1,4 +1,5 @@
 // # PLUGINS IMPORTS //
+// @ts-ignore
 import hexToBinary from "hex-to-binary"
 
 // # COMPONENTS IMPORTS //
