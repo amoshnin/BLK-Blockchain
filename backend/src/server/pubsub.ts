@@ -42,7 +42,7 @@ export default class PubSub {
   listener() {
     return {
       message: ({ channel, message }: MessageEvent) => {
-        console.log(`Msg recieved. Channel: ${channel}. Message: ${message}`)
+        console.log(`Message recieved. Channel: ${channel}.`)
         if (channel === CHANNELS.BLOCKCHAIN) {
           this.blockchain.replaceChain(message)
         }
