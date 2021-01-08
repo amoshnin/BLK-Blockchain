@@ -1,6 +1,11 @@
+// # PLUGINS IMPORTS //
+import hexToBinary from "hex-to-binary"
+
+// # COMPONENTS IMPORTS //
 import { GENESIS_DATA, MINE_RATE } from "./config"
 import cryptoHash from "./utils/crypto-hash"
-import hexToBinary from "hex-to-binary"
+
+/////////////////////////////////////////////////////////////////////////////
 
 export interface IBlockData {
   timestamp: number

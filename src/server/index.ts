@@ -1,6 +1,13 @@
+// # PLUGINS IMPORTS //
 import express from "express"
 import bodyParser from "body-parser"
+
+// # COMPONENTS IMPORTS //
 import Blockchain from "../blockchain/blockchain"
+
+// # EXTRA IMPORTS //
+
+/////////////////////////////////////////////////////////////////////////////
 
 const app = express()
 app.use(bodyParser.json())

@@ -1,5 +1,10 @@
+// # PLUGINS IMPORTS //
+
+// # COMPONENTS IMPORTS //
 import Block, { IBlockData } from "./block"
 import cryptoHash from "./utils/crypto-hash"
+
+/////////////////////////////////////////////////////////////////////////////
 
 export default class Blockchain {
   chain: Array<IBlockData> = [Block.genesis()]

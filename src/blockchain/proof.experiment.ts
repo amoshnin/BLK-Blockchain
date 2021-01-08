@@ -1,4 +1,4 @@
-import Blockchain from "."
+import Blockchain from "./blockchain"
 
 const blockchain = new Blockchain()
 blockchain.addBlock({ data: "INITIAL" })
