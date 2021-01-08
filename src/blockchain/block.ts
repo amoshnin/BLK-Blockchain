@@ -1,6 +1,5 @@
 import { GENESIS_DATA, MINE_RATE } from "./config"
 import cryptoHash from "./utils/crypto-hash"
-// @ts-ignore
 import hexToBinary from "hex-to-binary"
 
 export interface IBlockData {
