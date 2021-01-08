@@ -1,7 +1,7 @@
-import Block from "../src/block"
+import Block from "../src/blockchain/block"
 // @ts-ignore
 import hexToBinary from "hex-to-binary"
-import { GENESIS_DATA, MINE_RATE } from "../src/config"
+import { GENESIS_DATA, MINE_RATE } from "../src/blockchain/config"
 
 describe("BlockTest", () => {
   const { timestamp, lastHash, hash, data, nonce, difficulty } = {
