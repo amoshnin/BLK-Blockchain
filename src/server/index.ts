@@ -10,5 +10,5 @@ app.get(`/api/blocks`, (req, res) => {
 
 const port = 3000
 app.listen(port, () => {
-  console.log(`Listening on localhost port: ${port}`)
+  console.log(`Listening on localhost localhost:${port}`)
 })
