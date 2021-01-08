@@ -32,17 +32,16 @@ export default class PubSub {
     this.pubnub.addListener(this.listener())
 
     setTimeout(() => {
-      this.publish({
-        channel: CHANNELS.BLOCKCHAIN,
-        message: this.blockchain.chain,
-      })
+      this.broadcast()
     }, 1000)
   }
 
   listener() {
     return {
       message: ({ channel, message }: MessageEvent) => {
-        console.log(`Message recieved. Channel: ${channel}.`)
+        console.log(
+          `Message recieved. Channel: ${channel}. Chain length: ${message.length}`
+        )
         if (channel === CHANNELS.BLOCKCHAIN) {
           this.blockchain.replaceChain(message)
         }
@@ -50,7 +49,14 @@ export default class PubSub {
     }
   }
 
-  publish({
+  broadcast() {
+    this._publish({
+      channel: CHANNELS.BLOCKCHAIN,
+      message: this.blockchain.chain,
+    })
+  }
+
+  private _publish({
     channel,
     message,
   }: {
