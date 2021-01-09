@@ -1,4 +1,4 @@
-import cryptoHash from "../src/blockchain/utils/crypto-hash"
+import cryptoHash from "./crypto-hash"
 
 describe("cryptoHash() Test", () => {
   const input = {

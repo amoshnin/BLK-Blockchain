@@ -3,7 +3,7 @@ import PubNub, { MessageEvent } from "pubnub"
 import dotenv from "dotenv"
 
 // # COMPONENTS IMPORTS //
-import Blockchain from "../blockchain/blockchain"
+import Blockchain from "../blockchain"
 
 // # EXTRA IMPORTS //
 dotenv.config({})

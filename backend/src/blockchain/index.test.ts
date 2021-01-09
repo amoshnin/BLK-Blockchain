@@ -1,6 +1,6 @@
-import Blockchain from "../src/blockchain/blockchain"
-import Block from "../src/blockchain/block"
-import cryptoHash from "../src/blockchain/utils/crypto-hash"
+import Blockchain from "."
+import Block from "./block"
+import cryptoHash from "./utils/crypto-hash"
 
 describe("Blockchain Test", () => {
   let blockchain = new Blockchain()

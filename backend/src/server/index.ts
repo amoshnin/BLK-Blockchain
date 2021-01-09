@@ -4,7 +4,7 @@ import express from "express"
 import bodyParser, { json } from "body-parser"
 
 // # COMPONENTS IMPORTS //
-import Blockchain from "../blockchain/blockchain"
+import Blockchain from "../blockchain"
 import PubSub from "./pubsub"
 
 // # EXTRA IMPORTS //
