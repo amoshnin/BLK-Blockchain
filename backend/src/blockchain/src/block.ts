@@ -3,8 +3,8 @@
 import hexToBinary from "hex-to-binary"
 
 // # COMPONENTS IMPORTS //
-import { GENESIS_DATA, MINE_RATE } from "./config"
-import cryptoHash from "./utils/crypto-hash"
+import { GENESIS_DATA, MINE_RATE } from "../config"
+import { hasher } from "../../shared"
 
 /////////////////////////////////////////////////////////////////////////////
 
@@ -69,7 +69,7 @@ export default class Block {
         originalBlock: lastBlock,
         timestamp,
       })
-      hash = cryptoHash(data, timestamp, lastBlockHash, nonce, difficulty)
+      hash = hasher(data, timestamp, lastBlockHash, nonce, difficulty)
     } while (
       hexToBinary(hash).substring(0, difficulty) !== "0".repeat(difficulty)
     )

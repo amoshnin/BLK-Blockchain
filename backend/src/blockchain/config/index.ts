@@ -1,4 +1,4 @@
-import { IBlockData } from "../block"
+import { IBlockData } from "../src/block"
 
 export const MINE_RATE = 1000
 const INITIAL_DIFFICULTY = 3

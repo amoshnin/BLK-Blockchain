@@ -1,6 +1,6 @@
 import crypto from "crypto"
 
-export default function cryptoHash(...inputs: any) {
+export default function hasher(...inputs: any) {
   const hash = crypto.createHash("sha256")
 
   hash.update(inputs.sort().join(" "))

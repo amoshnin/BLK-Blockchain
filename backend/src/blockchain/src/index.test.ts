@@ -1,6 +1,6 @@
 import Blockchain from "."
 import Block from "./block"
-import cryptoHash from "./utils/crypto-hash"
+import { hasher } from "../../shared"
 
 describe("Blockchain Test", () => {
   let blockchain = new Blockchain()
@@ -134,7 +134,7 @@ describe("Blockchain Test", () => {
             difficulty,
             data,
           }
-          const hash = cryptoHash(...Object.values(args))
+          const hash = hasher(...Object.values(args))
           const badBlock = new Block({ ...args, hash })
           blockchain.chain.push(badBlock)
 

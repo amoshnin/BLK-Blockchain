@@ -2,7 +2,7 @@
 
 // # COMPONENTS IMPORTS //
 import Block, { IBlockData } from "./block"
-import cryptoHash from "./utils/crypto-hash"
+import { hasher } from "../../shared"
 
 /////////////////////////////////////////////////////////////////////////////
 
@@ -23,7 +23,7 @@ export default class Blockchain {
       const prevBlockHash = chain[i - 1].hash
       if (prevBlockHash !== rest.lastHash) return false
 
-      const validatedHash = cryptoHash(...Object.values(rest))
+      const validatedHash = hasher(...Object.values(rest))
       if (hash !== validatedHash) return false
 
       if (Math.abs(lastDifficulty - rest.difficulty) > 1) return false
