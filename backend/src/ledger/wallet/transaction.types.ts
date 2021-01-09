@@ -7,7 +7,7 @@ export interface ITransaction {
   amount: number
 }
 
-export interface IOutputMap {
+export interface IOutput {
   [key: string]: number
 }
 
@@ -16,4 +16,17 @@ export interface IInput {
   amount?: number
   address?: string
   signature?: ec.Signature
+}
+
+///// //// ////
+
+export interface ICreateInput {
+  senderWallet: Wallet
+  output: IOutput
+}
+
+export interface IUpdate {
+  senderWallet: Wallet
+  recipient: string
+  amount: number
 }

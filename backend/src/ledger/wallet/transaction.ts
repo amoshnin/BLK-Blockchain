@@ -1,34 +1,42 @@
 // # PLUGINS IMPORTS //
 import { v1 as uuid } from "uuid"
-import { IOutputMap, IInput, ITransaction } from "./transaction.types"
-import Wallet from "."
-import { verifySignature } from "../shared"
 
 // # COMPONENTS IMPORTS //
+import Wallet from "."
+
+// # EXTRA IMPORTS //
+import { verifySignature } from "../shared"
+import {
+  IOutput,
+  IInput,
+  ITransaction,
+  ICreateInput,
+  IUpdate,
+} from "./transaction.types"
 
 /////////////////////////////////////////////////////////////////////////////
 
 export default class Transaction {
   id: string = uuid()
   input: IInput = {}
-  outputMap: IOutputMap = {}
+  output: IOutput = {}
 
   constructor({ senderWallet, recipient, amount }: ITransaction) {
-    this.outputMap = this.createOutputMap({
+    this.output = this.createOutput({
       senderWallet,
       recipient,
       amount,
     })
 
-    this.input = this.createInput({ senderWallet, outputMap: this.outputMap })
+    this.input = this.createInput({ senderWallet, output: this.output })
   }
 
   static validateTransaction(transaction: Transaction) {
     const {
       input: { address, amount, signature },
-      outputMap,
+      output,
     } = transaction
-    const outputTotal = Object.values(outputMap).reduce((acc, cur) => acc + cur)
+    const outputTotal = Object.values(output).reduce((acc, cur) => acc + cur)
 
     if (amount !== outputTotal) {
       console.error(`Invalid transaction from ${address}`)
@@ -38,7 +46,7 @@ export default class Transaction {
     if (
       !verifySignature({
         publicKey: address as any,
-        data: outputMap,
+        data: output,
         signature: signature as any,
       })
     ) {
@@ -49,26 +57,26 @@ export default class Transaction {
     return true
   }
 
-  createInput({
-    senderWallet,
-    outputMap,
-  }: {
-    senderWallet: Wallet
-    outputMap: IOutputMap
-  }): IInput {
+  createInput({ senderWallet, output }: ICreateInput): IInput {
     return {
       timestamp: Date.now(),
       amount: senderWallet.balance,
       address: senderWallet.publicKey,
-      signature: senderWallet.sign(outputMap as any),
+      signature: senderWallet.sign(output as any),
     }
   }
 
-  createOutputMap({ senderWallet, recipient, amount }: ITransaction) {
-    const outputMap: IOutputMap = {}
+  createOutput({ senderWallet, recipient, amount }: ITransaction) {
+    const output: IOutput = {}
 
-    outputMap[recipient] = amount
-    outputMap[senderWallet.publicKey] = senderWallet.balance - amount
-    return outputMap
+    output[recipient] = amount
+    output[senderWallet.publicKey] = senderWallet.balance - amount
+    return output
+  }
+
+  update({ senderWallet, recipient, amount }: IUpdate) {
+    this.output[recipient] = amount
+    this.output[senderWallet.publicKey] -= amount
+    this.input = this.createInput({ senderWallet, output: this.output })
   }
 }

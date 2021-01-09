@@ -1,6 +1,7 @@
 import Wallet from ".."
 import Transaction from "../transaction"
 import { verifySignature } from "../../shared"
+import { ec } from "elliptic"
 
 describe("Transaction test", () => {
   let transaction: Transaction,
@@ -20,17 +21,17 @@ describe("Transaction test", () => {
     expect(transaction).toHaveProperty("id")
   })
 
-  describe("outputMap", () => {
-    it("has an `outputMap`", () => {
-      expect(transaction).toHaveProperty("outputMap")
+  describe("output", () => {
+    it("has an `output`", () => {
+      expect(transaction).toHaveProperty("output")
     })
 
     it("outputs the amount to the recipient", () => {
-      expect(transaction.outputMap[recipient]).toEqual(amount)
+      expect(transaction.output[recipient]).toEqual(amount)
     })
 
     it("outputs the remaining balance for the `senderWallet`", () => {
-      expect(transaction.outputMap[senderWallet.publicKey]).toEqual(
+      expect(transaction.output[senderWallet.publicKey]).toEqual(
         senderWallet.balance - amount
       )
     })
@@ -57,7 +58,7 @@ describe("Transaction test", () => {
       const verification = verifySignature({
         publicKey: senderWallet.publicKey,
         signature: transaction.input.signature as any,
-        data: transaction.outputMap as any,
+        data: transaction.output as any,
       })
 
       expect(verification).toBe(true)
@@ -79,9 +80,9 @@ describe("Transaction test", () => {
     })
 
     describe("when the transaction is invalid", () => {
-      describe("and a transaction outputMap value is invalid", () => {
+      describe("and a transaction output value is invalid", () => {
         it("returns false and logs and error", () => {
-          transaction.outputMap[senderWallet.publicKey] = 9999999
+          transaction.output[senderWallet.publicKey] = 9999999
           expect(Transaction.validateTransaction(transaction)).toBe(false)
           expect(errorMock).toHaveBeenCalled()
         })
@@ -93,6 +94,48 @@ describe("Transaction test", () => {
           expect(errorMock).toHaveBeenCalled()
         })
       })
+    })
+  })
+
+  describe("update()", () => {
+    let originalSignature: ec.Signature | undefined,
+      originalSenderOutput: number,
+      nextRecipient: string,
+      nextAmount: number
+
+    beforeEach(() => {
+      originalSignature = transaction.input.signature
+      originalSenderOutput = transaction.output[senderWallet.publicKey]
+      nextRecipient = "next-recipient"
+      nextAmount = 4
+
+      transaction.update({
+        senderWallet,
+        recipient: nextRecipient,
+        amount: nextAmount,
+      })
+    })
+
+    it("outputs the amount to the next recipient", () => {
+      expect(transaction.output[nextRecipient]).toEqual(nextAmount)
+    })
+
+    it("subtracts the amount from the original sender output amount", () => {
+      expect(transaction.output[senderWallet.publicKey]).toEqual(
+        originalSenderOutput - nextAmount
+      )
+    })
+
+    it("maintains a total output that matches the input amount", () => {
+      const total = Object.values(transaction.output).reduce(
+        (acc, cur) => acc + cur
+      )
+
+      expect(total).toEqual(transaction.input.amount)
+    })
+
+    it("re-signs the transaction", () => {
+      expect(transaction.input.signature).not.toEqual(originalSignature)
     })
   })
 })

@@ -71,7 +71,7 @@ describe("Wallet Test", () => {
       })
 
       it("outputs the amount the recipient", () => {
-        expect(transaction.outputMap[recipient]).toEqual(amount)
+        expect(transaction.output[recipient]).toEqual(amount)
       })
     })
   })
