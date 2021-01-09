@@ -1,4 +1,4 @@
-import { hasher } from "."
+import { hasher } from ".."
 
 describe("hash() Test", () => {
   const input = {

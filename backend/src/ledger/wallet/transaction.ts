@@ -2,6 +2,7 @@
 import { v1 as uuid } from "uuid"
 import { IOutputMap, IInput, ITransaction } from "./transaction.types"
 import Wallet from "."
+import { verifySignature } from "../shared"
 
 // # COMPONENTS IMPORTS //
 
@@ -9,8 +10,8 @@ import Wallet from "."
 
 export default class Transaction {
   id: string = uuid()
-  outputMap: IOutputMap = {}
   input: IInput = {}
+  outputMap: IOutputMap = {}
 
   constructor({ senderWallet, recipient, amount }: ITransaction) {
     this.outputMap = this.createOutputMap({
@@ -23,6 +24,28 @@ export default class Transaction {
   }
 
   static validateTransaction(transaction: Transaction) {
+    const {
+      input: { address, amount, signature },
+      outputMap,
+    } = transaction
+    const outputTotal = Object.values(outputMap).reduce((acc, cur) => acc + cur)
+
+    if (amount !== outputTotal) {
+      console.error(`Invalid transaction from ${address}`)
+      return false
+    }
+
+    if (
+      !verifySignature({
+        publicKey: address as any,
+        data: outputMap,
+        signature: signature as any,
+      })
+    ) {
+      console.error(`Invalid transaction from ${address}`)
+      return false
+    }
+
     return true
   }
 

@@ -2,7 +2,7 @@
 
 // # COMPONENTS IMPORTS //
 import Block, { IBlockData } from "./block"
-import { hasher } from "../../shared"
+import { hasher } from "../shared"
 
 /////////////////////////////////////////////////////////////////////////////
 

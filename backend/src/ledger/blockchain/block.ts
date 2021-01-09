@@ -3,8 +3,8 @@
 import hexToBinary from "hex-to-binary"
 
 // # COMPONENTS IMPORTS //
-import { GENESIS_DATA, MINE_RATE } from "../config"
-import { hasher } from "../../shared"
+import { GENESIS_DATA, MINE_RATE } from "./constants"
+import { hasher } from "../shared"
 
 /////////////////////////////////////////////////////////////////////////////
 
