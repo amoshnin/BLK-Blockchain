@@ -22,6 +22,10 @@ export default class Transaction {
     this.input = this.createInput({ senderWallet, outputMap: this.outputMap })
   }
 
+  static validateTransaction(transaction: Transaction) {
+    return true
+  }
+
   createInput({
     senderWallet,
     outputMap,

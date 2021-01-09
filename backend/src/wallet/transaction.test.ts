@@ -1,6 +1,6 @@
 import Wallet from "."
-import { verifySignature } from "../shared"
 import Transaction from "./transaction"
+import { verifySignature } from "../shared"
 
 describe("Transaction test", () => {
   let transaction: Transaction,
@@ -61,6 +61,38 @@ describe("Transaction test", () => {
       })
 
       expect(verification).toBe(true)
+    })
+  })
+
+  describe("validateTransaction()", () => {
+    let errorMock: any
+
+    beforeEach(() => {
+      errorMock = jest.fn()
+      global.console.error = errorMock
+    })
+
+    describe("when the transaction is valid", () => {
+      it("returns true", () => {
+        expect(Transaction.validateTransaction(transaction)).toBe(true)
+      })
+    })
+
+    describe("when the transaction is invalid", () => {
+      describe("and a transaction outputMap value is invalid", () => {
+        it("returns false and logs and error", () => {
+          transaction.outputMap[senderWallet.publicKey] = 9999999
+          expect(Transaction.validateTransaction(transaction)).toBe(false)
+          expect(errorMock).toHaveBeenCalled()
+        })
+      })
+      describe("and the transaction input signature is invalid", () => {
+        it("returns false and logs and error", () => {
+          transaction.input.signature = new Wallet().sign("data")
+          expect(Transaction.validateTransaction(transaction)).toBe(false)
+          expect(errorMock).toHaveBeenCalled()
+        })
+      })
     })
   })
 })

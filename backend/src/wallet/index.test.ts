@@ -1,5 +1,6 @@
 import Wallet from "."
 import { verifySignature } from "../shared"
+import Transaction from "./transaction"
 
 describe("Wallet Test", () => {
   let wallet: Wallet
