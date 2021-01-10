@@ -8,7 +8,7 @@ describe("BlockTest", () => {
     timestamp: 2000,
     lastHash: "foo-hash",
     hash: "bar-hash",
-    data: "data boilter",
+    data: [],
     nonce: 1,
     difficulty: 4,
   }
@@ -54,7 +54,7 @@ describe("BlockTest", () => {
   })
 
   describe("mineBlock()", () => {
-    const data = "mined data"
+    const data = [{ id: "" }]
     const lastBlock = Block.genesis()
     const minedBlock = Block.mineBlock({ lastBlock, data })
 

@@ -2,6 +2,7 @@ import Wallet from "../wallet"
 import Transaction from "../transaction"
 import { verifySignature } from "../../shared"
 import { ec } from "elliptic"
+import { MINING_REWARD, REWARD_INPUT } from "../../shared/constants"
 
 describe("Transaction test", () => {
   let transaction: Transaction,
@@ -176,6 +177,25 @@ describe("Transaction test", () => {
           )
         })
       })
+    })
+  })
+
+  describe("rewardTransaction()", () => {
+    let rewardTransaction: Transaction, minerWallet: Wallet
+
+    beforeEach(() => {
+      minerWallet = new Wallet()
+      rewardTransaction = Transaction.rewardTransaction({ minerWallet })
+    })
+
+    it("creates a transaction with the reward input", () => {
+      expect(rewardTransaction.inputs).toEqual(REWARD_INPUT)
+    })
+
+    it("creates one transaction for the miner with the `MINING_REWARD`", () => {
+      expect(rewardTransaction.outputs[minerWallet.publicKey]).toEqual(
+        MINING_REWARD
+      )
     })
   })
 })

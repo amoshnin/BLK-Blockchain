@@ -98,7 +98,7 @@ describe("Blockchain Test", () => {
 
     describe("when chain doesn't start with genesis block", () => {
       it("returns false", () => {
-        blockchain.chain[0] = { ...blockchain.chain[0], data: "fake-genesis" }
+        blockchain.chain[0] = { ...blockchain.chain[0], data: [] }
         expect(Blockchain.isValidChain(blockchain.chain)).toBe(false)
       })
     })
@@ -113,7 +113,7 @@ describe("Blockchain Test", () => {
 
       describe("and the chain contains a block with an invalid fied", () => {
         it("returns false", () => {
-          blockchain.chain[2].data = "some-bad-and-evil-data"
+          blockchain.chain[2].data = [{ id: "evil-data" }]
           expect(Blockchain.isValidChain(blockchain.chain)).toBe(false)
         })
       })
@@ -124,7 +124,7 @@ describe("Blockchain Test", () => {
           const lastHash = lastBlock.hash
           const timestamp = Date.now()
           const nonce = 0
-          const data = ""
+          const data = [{ id: "" }]
           const difficulty = lastBlock.difficulty - 3
 
           const args = {

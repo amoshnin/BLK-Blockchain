@@ -1,6 +1,7 @@
+import { IBlockData } from "../blockchain/block"
 import Transaction from "./transaction"
 
-interface ITransactionsMap {
+export interface ITransactionsMap {
   [key: string]: Transaction
 }
 
@@ -13,6 +14,20 @@ export default class TransactionPool {
 
   setMap({ transactionsMap }: { transactionsMap: ITransactionsMap }) {
     this.transactionsMap = transactionsMap
+  }
+
+  clear() {
+    this.transactionsMap = {}
+  }
+
+  clearBlockchainTransactions({ chain }: { chain: Array<IBlockData> }) {
+    chain.forEach((block) => {
+      for (let transaction of block.data) {
+        if (this.transactionsMap[transaction.id]) {
+          delete this.transactionsMap[transaction.id]
+        }
+      }
+    })
   }
 
   existingTransaction({ inputAddress }: { inputAddress: string }) {

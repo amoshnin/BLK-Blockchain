@@ -12,14 +12,14 @@ export interface IBlockData {
   timestamp: number
   lastHash: string
   hash: string
-  data: string
+  data: Array<{ id: string }>
   nonce: number
   difficulty: number
 }
 
 interface IMineBlockInput {
   lastBlock: IBlockData
-  data: string
+  data: Array<{ id: string }>
 }
 
 interface IDifficultyInput {
@@ -28,7 +28,7 @@ interface IDifficultyInput {
 }
 
 export default class Block {
-  data = ""
+  data = [{ id: "" }]
   hash = ""
   lastHash = ""
   timestamp: number = 0
