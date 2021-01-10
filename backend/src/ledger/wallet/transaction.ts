@@ -37,7 +37,6 @@ export default class Transaction {
 
     if (outputs && inputs) {
       this.outputs = outputs
-
       this.inputs = inputs
     }
   }

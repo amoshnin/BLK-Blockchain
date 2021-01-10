@@ -1,7 +1,7 @@
 // @ts-ignore
 import hexToBinary from "hex-to-binary"
 import Block from "../block"
-import { GENESIS_DATA, MINE_RATE } from "../constants"
+import { GENESIS_DATA, MINE_RATE } from "../../shared/constants"
 
 describe("BlockTest", () => {
   const { timestamp, lastHash, hash, data, nonce, difficulty } = {

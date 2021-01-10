@@ -98,7 +98,10 @@ describe("Blockchain Test", () => {
 
     describe("when chain doesn't start with genesis block", () => {
       it("returns false", () => {
-        blockchain.chain[0] = { ...blockchain.chain[0], data: [] }
+        blockchain.chain[0] = {
+          ...blockchain.chain[0],
+          data: [{ id: "random" }],
+        }
         expect(Blockchain.isValidChain(blockchain.chain)).toBe(false)
       })
     })
