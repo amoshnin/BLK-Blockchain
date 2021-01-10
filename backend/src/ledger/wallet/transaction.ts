@@ -5,6 +5,7 @@ import { v1 as uuid } from "uuid"
 
 // # EXTRA IMPORTS //
 import { verifySignature } from "../shared"
+import { MINING_REWARD, REWARD_INPUT } from "../shared/constants"
 import {
   IOutputs,
   IInputs,
@@ -12,6 +13,7 @@ import {
   ICreateInput,
   IUpdate,
 } from "./transaction.types"
+import Wallet from "./wallet"
 
 /////////////////////////////////////////////////////////////////////////////
 
@@ -20,14 +22,29 @@ export default class Transaction {
   inputs: IInputs = {}
   outputs: IOutputs = {}
 
-  constructor({ senderWallet, recipient, amount }: ITransaction) {
-    this.outputs = this._createOutputs({
-      senderWallet,
-      recipient,
-      amount,
-    })
+  constructor({
+    senderWallet,
+    recipient,
+    amount,
+    inputs,
+    outputs,
+  }: ITransaction) {
+    if (senderWallet && recipient && amount) {
+      this.outputs = this._createOutputs({
+        senderWallet,
+        recipient,
+        amount,
+      })
 
-    this.inputs = this._createInput({ senderWallet, outputs: this.outputs })
+      this.inputs =
+        inputs || this._createInput({ senderWallet, outputs: this.outputs })
+    }
+
+    if (outputs && inputs) {
+      this.outputs = outputs
+
+      this.inputs = inputs
+    }
   }
 
   static validateTransaction(transaction: Transaction) {
@@ -56,6 +73,13 @@ export default class Transaction {
     return true
   }
 
+  static rewardTransaction({ minerWallet }: { minerWallet: Wallet }) {
+    return new this({
+      inputs: REWARD_INPUT,
+      outputs: { [minerWallet.publicKey]: MINING_REWARD },
+    })
+  }
+
   update({ senderWallet, recipient, amount }: IUpdate) {
     if (amount > this.outputs[senderWallet.publicKey]) {
       throw new Error("Amount exceeds the balance")
@@ -80,11 +104,19 @@ export default class Transaction {
     }
   }
 
-  private _createOutputs({ senderWallet, recipient, amount }: ITransaction) {
+  private _createOutputs({
+    senderWallet,
+    recipient,
+    amount,
+  }: ITransaction): IOutputs {
     const outputs: IOutputs = {}
 
-    outputs[recipient] = amount
-    outputs[senderWallet.publicKey] = senderWallet.balance - amount
-    return outputs
+    if (amount && recipient && senderWallet) {
+      outputs[recipient] = amount
+      outputs[senderWallet.publicKey] = senderWallet.balance - amount
+      return outputs
+    }
+
+    return {}
   }
 }
