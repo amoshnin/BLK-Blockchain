@@ -33,7 +33,7 @@ export default class Blockchain {
     return true
   }
 
-  replaceChain(chain: Array<IBlockData>) {
+  replaceChain(chain: Array<IBlockData>, onSuccess?: () => void) {
     if (chain.length <= this.chain.length) {
       console.error("Incoming chain must be longer")
       return
@@ -44,6 +44,7 @@ export default class Blockchain {
       return
     }
 
+    onSuccess && onSuccess()
     console.log("Replacing chain with", chain)
     this.chain = chain
   }
