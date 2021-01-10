@@ -1,4 +1,4 @@
-import { IBlockData } from "../blockchain/block"
+import { IBlockData } from "../shared/typings"
 import Transaction from "./transaction"
 
 export interface ITransactionsMap {
@@ -16,6 +16,12 @@ export default class TransactionPool {
     this.transactionsMap = transactionsMap
   }
 
+  validTransactions(): Array<Transaction> {
+    return Object.values(this.transactionsMap).filter((item) =>
+      Transaction.validTransaction(item)
+    )
+  }
+
   clear() {
     this.transactionsMap = {}
   }
@@ -23,8 +29,8 @@ export default class TransactionPool {
   clearBlockchainTransactions({ chain }: { chain: Array<IBlockData> }) {
     chain.forEach((block) => {
       for (let transaction of block.data) {
-        if (this.transactionsMap[transaction.id]) {
-          delete this.transactionsMap[transaction.id]
+        if (this.transactionsMap[transaction.id!]) {
+          delete this.transactionsMap[transaction.id!]
         }
       }
     })

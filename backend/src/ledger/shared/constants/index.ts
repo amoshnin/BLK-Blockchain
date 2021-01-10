@@ -1,4 +1,4 @@
-import { IBlockData } from "../../blockchain/block"
+import { IBlockData } from "../typings"
 
 export const START_BALANCE = 1000
 export const MINE_RATE = 1000
@@ -13,7 +13,7 @@ export const GENESIS_DATA: IBlockData = {
   timestamp: 1,
   lastHash: "-----",
   hash: "hash-one",
-  data: "",
+  data: [],
   difficulty: INITIAL_DIFFICULTY,
   nonce: 0,
 }

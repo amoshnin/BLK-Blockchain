@@ -3,19 +3,11 @@
 import hexToBinary from "hex-to-binary"
 
 // # COMPONENTS IMPORTS //
-import { GENESIS_DATA, MINE_RATE } from "./constants"
+import { GENESIS_DATA, MINE_RATE } from "../shared/constants"
 import { hasher } from "../shared"
+import { IBlockData } from "../shared/typings"
 
 /////////////////////////////////////////////////////////////////////////////
-
-export interface IBlockData {
-  timestamp: number
-  lastHash: string
-  hash: string
-  data: Array<{ id: string }>
-  nonce: number
-  difficulty: number
-}
 
 interface IMineBlockInput {
   lastBlock: IBlockData
@@ -28,7 +20,7 @@ interface IDifficultyInput {
 }
 
 export default class Block {
-  data = [{ id: "" }]
+  data
   hash = ""
   lastHash = ""
   timestamp: number = 0

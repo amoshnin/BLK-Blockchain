@@ -9,6 +9,7 @@ import TransactionPool from "../ledger/wallet/transaction-pool"
 import Wallet from "../ledger/wallet/wallet"
 import PubSub from "./pubsub"
 import { routes } from "./config/routes"
+import TransactionMiner from "../ledger/wallet/transaction-miner"
 
 // # EXTRA IMPORTS //
 const app = express()
@@ -23,6 +24,14 @@ const blockchain = new Blockchain()
 const transactionPool = new TransactionPool()
 const wallet = new Wallet()
 const pubsub = new PubSub({ blockchain, transactionPool, wallet })
+const transactionMiner = new TransactionMiner({
+  blockchain,
+  transactionPool,
+  wallet,
+  pubsub,
+})
+
+/////////////////////////////////////////////////////////////////////////////
 
 app.get(routes.blocks, (req, res) => {
   res.json(blockchain.chain)
@@ -60,6 +69,11 @@ app.post(routes.transact, (req, res) => {
 
 app.get(routes.transactionPoolMap, (req, res) => {
   res.json(transactionPool.transactionsMap)
+})
+
+app.get(routes.mineTransactions, (req, res) => {
+  transactionMiner.mineTransaction()
+  res.redirect(routes.blocks)
 })
 
 const syncWithRootState = () => {

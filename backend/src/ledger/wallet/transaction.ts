@@ -6,13 +6,8 @@ import { v1 as uuid } from "uuid"
 // # EXTRA IMPORTS //
 import { verifySignature } from "../shared"
 import { MINING_REWARD, REWARD_INPUT } from "../shared/constants"
-import {
-  IOutputs,
-  IInputs,
-  ITransaction,
-  ICreateInput,
-  IUpdate,
-} from "./transaction.types"
+import { ITransaction } from "../shared/typings"
+import { IOutputs, IInputs, ICreateInput, IUpdate } from "./transaction.types"
 import Wallet from "./wallet"
 
 /////////////////////////////////////////////////////////////////////////////
@@ -47,7 +42,7 @@ export default class Transaction {
     }
   }
 
-  static validateTransaction(transaction: Transaction) {
+  static validTransaction(transaction: Transaction) {
     const {
       inputs: { address, amount, signature },
       outputs,

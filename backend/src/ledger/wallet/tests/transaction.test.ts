@@ -66,7 +66,7 @@ describe("Transaction test", () => {
     })
   })
 
-  describe("validateTransaction()", () => {
+  describe("validTransaction()", () => {
     let errorMock: any
 
     beforeEach(() => {
@@ -76,7 +76,7 @@ describe("Transaction test", () => {
 
     describe("when the transaction is valid", () => {
       it("returns true", () => {
-        expect(Transaction.validateTransaction(transaction)).toBe(true)
+        expect(Transaction.validTransaction(transaction)).toBe(true)
       })
     })
 
@@ -84,14 +84,14 @@ describe("Transaction test", () => {
       describe("and a transaction outputs value is invalid", () => {
         it("returns false and logs and error", () => {
           transaction.outputs[senderWallet.publicKey] = 9999999
-          expect(Transaction.validateTransaction(transaction)).toBe(false)
+          expect(Transaction.validTransaction(transaction)).toBe(false)
           expect(errorMock).toHaveBeenCalled()
         })
       })
       describe("and the transaction inputs signature is invalid", () => {
         it("returns false and logs and error", () => {
           transaction.inputs.signature = new Wallet().sign("data")
-          expect(Transaction.validateTransaction(transaction)).toBe(false)
+          expect(Transaction.validTransaction(transaction)).toBe(false)
           expect(errorMock).toHaveBeenCalled()
         })
       })

@@ -1,8 +1,9 @@
 // # PLUGINS IMPORTS //
 
 // # COMPONENTS IMPORTS //
-import Block, { IBlockData } from "./block"
+import Block from "./block"
 import { hasher } from "../shared"
+import { IBlockData } from "../shared/typings"
 
 /////////////////////////////////////////////////////////////////////////////
 
