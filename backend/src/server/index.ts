@@ -8,6 +8,7 @@ import Blockchain from "../ledger/blockchain/blockchain"
 import TransactionPool from "../ledger/wallet/transaction-pool"
 import Wallet from "../ledger/wallet/wallet"
 import PubSub from "./pubsub"
+import { routes } from "./config/routes"
 
 // # EXTRA IMPORTS //
 const app = express()
@@ -21,22 +22,22 @@ const ROOT_NODE_ADDRESS = `http://localhost:${DEFAULT_PORT}`
 const blockchain = new Blockchain()
 const transactionPool = new TransactionPool()
 const wallet = new Wallet()
-const pubsub = new PubSub({ blockchain, transactionPool })
+const pubsub = new PubSub({ blockchain, transactionPool, wallet })
 
-app.get(`/api/blocks`, (req, res) => {
+app.get(routes.blocks, (req, res) => {
   res.json(blockchain.chain)
 })
 
-app.post("/api/mine", (req, res) => {
+app.post(routes.mine, (req, res) => {
   console.log(req.body)
   const { data } = req.body
 
   blockchain.addBlock({ data })
   pubsub.broadcastBlockchain()
-  res.redirect(`/api/blocks`)
+  res.redirect(routes.blocks)
 })
 
-app.post("/api/transact", (req, res) => {
+app.post(routes.transact, (req, res) => {
   const { amount, recipient } = req.body
   let transaction = transactionPool.existingTransaction({
     inputAddress: wallet.publicKey,
@@ -57,17 +58,28 @@ app.post("/api/transact", (req, res) => {
   res.json({ type: "success", transaction })
 })
 
-app.get("/api/transaction-pool-map", (req, res) => {
+app.get(routes.transactionPoolMap, (req, res) => {
   res.json(transactionPool.transactionsMap)
 })
 
-const syncChain = () => {
+const syncWithRootState = () => {
   request(
-    { url: `${ROOT_NODE_ADDRESS}/api/blocks` },
+    { url: `${ROOT_NODE_ADDRESS}${routes.blocks}` },
     (error, response, body) => {
       if (!error && response.statusCode === 200) {
         console.log("Sync chain")
         blockchain.replaceChain(JSON.parse(body))
+      }
+    }
+  )
+
+  request(
+    { url: `${ROOT_NODE_ADDRESS}${routes.transactionPoolMap}` },
+    (error, response, body) => {
+      if (!error && response.statusCode === 200) {
+        const transactionsMap = body ? JSON.parse(body) : {}
+        console.log("Replacing Transaction root map", transactionsMap)
+        transactionPool.setMap({ transactionsMap })
       }
     }
   )
@@ -81,5 +93,5 @@ if (process.env.GENERATE_PEER_PORT === "true") {
 }
 app.listen(PEER_ROOT, () => {
   console.log(`Listening on localhost localhost:${PEER_ROOT}`)
-  syncChain()
+  syncWithRootState()
 })

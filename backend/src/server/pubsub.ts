@@ -6,6 +6,7 @@ import dotenv from "dotenv"
 import Blockchain from "../ledger/blockchain/blockchain"
 import TransactionPool from "../ledger/wallet/transaction-pool"
 import Transaction from "../ledger/wallet/transaction"
+import Wallet from "../ledger/wallet/wallet"
 
 // # EXTRA IMPORTS //
 dotenv.config({})
@@ -24,16 +25,19 @@ const CHANNELS = {
 }
 
 interface IProps {
+  wallet: Wallet
   blockchain: Blockchain
   transactionPool: TransactionPool
 }
 
 export default class PubSub {
   pubnub: PubNub
+  wallet: Wallet
   blockchain: Blockchain
   transactionPool: TransactionPool
 
-  constructor({ blockchain, transactionPool }: IProps) {
+  constructor({ blockchain, transactionPool, wallet }: IProps) {
+    this.wallet = wallet
     this.blockchain = blockchain
     this.transactionPool = transactionPool
 
@@ -59,7 +63,13 @@ export default class PubSub {
             break
 
           case CHANNELS.TRANSACTION:
-            this.transactionPool.setTransaction(message)
+            if (
+              !this.transactionPool.existingTransaction({
+                inputAddress: this.wallet.publicKey,
+              })
+            ) {
+              this.transactionPool.setTransaction(message)
+            }
             break
 
           default:
