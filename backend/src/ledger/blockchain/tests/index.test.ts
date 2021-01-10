@@ -1,4 +1,4 @@
-import Blockchain from ".."
+import Blockchain from "../blockchain"
 import Block from "../block"
 import { hasher } from "../../shared"
 

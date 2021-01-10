@@ -1,11 +1,11 @@
 import EC, { ec } from "elliptic"
 import { hasher } from ".."
-import { IOutput } from "../../wallet/transaction.types"
+import { IOutputs } from "../../wallet/transaction.types"
 export const elliptic = new EC.ec("secp256k1")
 
 interface IVerifySignature {
   publicKey: string
-  data: IOutput
+  data: IOutputs
   signature: ec.Signature
 }
 

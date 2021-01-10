@@ -3,7 +3,9 @@ import PubNub, { MessageEvent } from "pubnub"
 import dotenv from "dotenv"
 
 // # COMPONENTS IMPORTS //
-import Blockchain from "../ledger/blockchain"
+import Blockchain from "../ledger/blockchain/blockchain"
+import TransactionPool from "../ledger/wallet/transaction-pool"
+import Transaction from "../ledger/wallet/transaction"
 
 // # EXTRA IMPORTS //
 dotenv.config({})
@@ -18,21 +20,29 @@ const credentials: PubNub.PubnubConfig = {
 
 const CHANNELS = {
   BLOCKCHAIN: "BLOCKCHAIN",
+  TRANSACTION: "TRANSACTION",
+}
+
+interface IProps {
+  blockchain: Blockchain
+  transactionPool: TransactionPool
 }
 
 export default class PubSub {
   pubnub: PubNub
   blockchain: Blockchain
+  transactionPool: TransactionPool
 
-  constructor({ blockchain }: { blockchain: Blockchain }) {
+  constructor({ blockchain, transactionPool }: IProps) {
     this.blockchain = blockchain
+    this.transactionPool = transactionPool
 
     this.pubnub = new PubNub(credentials)
     this.pubnub.subscribe({ channels: Object.values(CHANNELS) })
     this.pubnub.addListener(this.listener())
 
     setTimeout(() => {
-      this.broadcast()
+      this.broadcastBlockchain()
     }, 1000)
   }
 
@@ -42,17 +52,34 @@ export default class PubSub {
         console.log(
           `Message recieved. Channel: ${channel}. Chain length: ${message.length}`
         )
-        if (channel === CHANNELS.BLOCKCHAIN) {
-          this.blockchain.replaceChain(message)
+
+        switch (channel) {
+          case CHANNELS.BLOCKCHAIN:
+            this.blockchain.replaceChain(message)
+            break
+
+          case CHANNELS.TRANSACTION:
+            this.transactionPool.setTransaction(message)
+            break
+
+          default:
+            return
         }
       },
     }
   }
 
-  broadcast() {
+  broadcastBlockchain() {
     this._publish({
       channel: CHANNELS.BLOCKCHAIN,
       message: this.blockchain.chain,
+    })
+  }
+
+  broadcastTransaction(transaction: Transaction) {
+    this._publish({
+      channel: CHANNELS.TRANSACTION,
+      message: transaction,
     })
   }
 
