@@ -1,4 +1,4 @@
-import Wallet from ".."
+import Wallet from "../wallet"
 import { verifySignature } from "../../shared"
 import Transaction from "../transaction"
 
@@ -67,11 +67,11 @@ describe("Wallet Test", () => {
       })
 
       it("matches the transaction input with the wallet", () => {
-        expect(transaction.input.address).toEqual(wallet.publicKey)
+        expect(transaction.inputs.address).toEqual(wallet.publicKey)
       })
 
       it("outputs the amount the recipient", () => {
-        expect(transaction.output[recipient]).toEqual(amount)
+        expect(transaction.outputs[recipient]).toEqual(amount)
       })
     })
   })

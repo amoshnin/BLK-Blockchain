@@ -6,8 +6,8 @@ import { v1 as uuid } from "uuid"
 // # EXTRA IMPORTS //
 import { verifySignature } from "../shared"
 import {
-  IOutput,
-  IInput,
+  IOutputs,
+  IInputs,
   ITransaction,
   ICreateInput,
   IUpdate,
@@ -17,27 +17,27 @@ import {
 
 export default class Transaction {
   id: string = uuid()
-  input: IInput = {}
-  output: IOutput = {}
+  inputs: IInputs = {}
+  outputs: IOutputs = {}
 
   constructor({ senderWallet, recipient, amount }: ITransaction) {
-    this.output = this._createOutput({
+    this.outputs = this._createOutputs({
       senderWallet,
       recipient,
       amount,
     })
 
-    this.input = this._createInput({ senderWallet, output: this.output })
+    this.inputs = this._createInput({ senderWallet, outputs: this.outputs })
   }
 
   static validateTransaction(transaction: Transaction) {
     const {
-      input: { address, amount, signature },
-      output,
+      inputs: { address, amount, signature },
+      outputs,
     } = transaction
-    const outputTotal = Object.values(output).reduce((acc, cur) => acc + cur)
+    const outputsTotal = Object.values(outputs).reduce((acc, cur) => acc + cur)
 
-    if (amount !== outputTotal) {
+    if (amount !== outputsTotal) {
       console.error(`Invalid transaction from ${address}`)
       return false
     }
@@ -45,7 +45,7 @@ export default class Transaction {
     if (
       !verifySignature({
         publicKey: address as any,
-        data: output,
+        data: outputs,
         signature: signature as any,
       })
     ) {
@@ -57,29 +57,34 @@ export default class Transaction {
   }
 
   update({ senderWallet, recipient, amount }: IUpdate) {
-    if (amount > this.output[senderWallet.publicKey]) {
+    if (amount > this.outputs[senderWallet.publicKey]) {
       throw new Error("Amount exceeds the balance")
     }
 
-    this.output[recipient] = amount
-    this.output[senderWallet.publicKey] -= amount
-    this.input = this._createInput({ senderWallet, output: this.output })
+    if (!this.outputs[recipient]) {
+      this.outputs[recipient] = amount
+    } else {
+      this.outputs[recipient] += amount
+    }
+
+    this.outputs[senderWallet.publicKey] -= amount
+    this.inputs = this._createInput({ senderWallet, outputs: this.outputs })
   }
 
-  private _createInput({ senderWallet, output }: ICreateInput): IInput {
+  private _createInput({ senderWallet, outputs }: ICreateInput): IInputs {
     return {
       timestamp: Date.now(),
       amount: senderWallet.balance,
       address: senderWallet.publicKey,
-      signature: senderWallet.sign(output as any),
+      signature: senderWallet.sign(outputs as any),
     }
   }
 
-  private _createOutput({ senderWallet, recipient, amount }: ITransaction) {
-    const output: IOutput = {}
+  private _createOutputs({ senderWallet, recipient, amount }: ITransaction) {
+    const outputs: IOutputs = {}
 
-    output[recipient] = amount
-    output[senderWallet.publicKey] = senderWallet.balance - amount
-    return output
+    outputs[recipient] = amount
+    outputs[senderWallet.publicKey] = senderWallet.balance - amount
+    return outputs
   }
 }

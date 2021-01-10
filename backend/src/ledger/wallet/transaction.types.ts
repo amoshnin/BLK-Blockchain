@@ -1,5 +1,5 @@
 import { ec } from "elliptic"
-import Wallet from "."
+import Wallet from "./wallet"
 
 export interface ITransaction {
   senderWallet: Wallet
@@ -7,11 +7,11 @@ export interface ITransaction {
   amount: number
 }
 
-export interface IOutput {
+export interface IOutputs {
   [key: string]: number
 }
 
-export interface IInput {
+export interface IInputs {
   timestamp?: number
   amount?: number
   address?: string
@@ -22,7 +22,7 @@ export interface IInput {
 
 export interface ICreateInput {
   senderWallet: Wallet
-  output: IOutput
+  outputs: IOutputs
 }
 
 export interface IUpdate {
