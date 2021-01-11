@@ -3,10 +3,12 @@ import { ec } from "elliptic"
 import { elliptic } from "../shared/functions/transactions-verifier"
 
 // # COMPONENTS IMPORTS //
-import { START_BALANCE } from "../shared/constants"
-import { hasher } from "../shared"
 import Transaction from "./transaction"
+
+// # EXTRA IMPORTS //
+import { START_BALANCE } from "../shared/constants"
 import { IBlockData } from "../shared/typings"
+import { hasher } from "../shared"
 
 /////////////////////////////////////////////////////////////////////////////
 
@@ -28,24 +30,33 @@ export default class Wallet {
   }
 
   static calculateBalance({ chain, address }: ICalculateBalanceInput) {
+    let hasConductedTransaction = false
     let sum = 0
 
-    for (let i = 0; i < chain.length; i++) {
+    for (let i = chain.length - 1; i > 0; i--) {
       const block = chain[i]
 
       for (let transaction of block.data) {
+        if (transaction.inputs?.address === address) {
+          hasConductedTransaction = true
+        }
+
         const outputAmount = transaction.outputs![address]
 
         if (outputAmount) {
           sum += outputAmount
         }
       }
+
+      if (hasConductedTransaction) {
+        break
+      }
     }
 
-    return START_BALANCE + sum
+    return hasConductedTransaction ? sum : START_BALANCE + sum
   }
 
-  sign(data: string) {
+  sign(data: any) {
     const hash = hasher(data)
     return this.keyPair.sign(hash)
   }
@@ -53,10 +64,16 @@ export default class Wallet {
   createTransaction({
     recipient,
     amount,
+    chain,
   }: {
     recipient: string
     amount: number
+    chain?: Array<IBlockData>
   }): Transaction {
+    if (chain) {
+      this.balance = Wallet.calculateBalance({ chain, address: this.publicKey })
+    }
+
     if (amount > this.balance) {
       throw new Error("Amount exceeds balance")
     }

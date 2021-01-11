@@ -8,10 +8,10 @@ import Blockchain from "../ledger/blockchain/blockchain"
 import TransactionPool from "../ledger/wallet/transaction-pool"
 import Wallet from "../ledger/wallet/wallet"
 import PubSub from "./pubsub"
-import { routes } from "./config/routes"
 import TransactionMiner from "../ledger/wallet/transaction-miner"
 
 // # EXTRA IMPORTS //
+import { routes } from "./config/routes"
 const app = express()
 app.use(bodyParser.json())
 
@@ -56,7 +56,11 @@ app.post(routes.transact, (req, res) => {
     if (transaction) {
       transaction.update({ senderWallet: wallet, recipient, amount })
     } else {
-      transaction = wallet.createTransaction({ recipient, amount })
+      transaction = wallet.createTransaction({
+        recipient,
+        amount,
+        chain: blockchain.chain,
+      })
     }
   } catch (error) {
     return res.status(400).json({ type: "error", message: error.message })
@@ -74,6 +78,15 @@ app.get(routes.transactionPoolMap, (req, res) => {
 app.get(routes.mineTransactions, (req, res) => {
   transactionMiner.mineTransaction()
   res.redirect(routes.blocks)
+})
+
+app.get("/api/wallet-info", (req, res) => {
+  const address = wallet.publicKey
+
+  res.json({
+    address,
+    balance: Wallet.calculateBalance({ chain: blockchain.chain, address }),
+  })
 })
 
 const syncWithRootState = () => {
