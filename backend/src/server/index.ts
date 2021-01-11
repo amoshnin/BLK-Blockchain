@@ -2,6 +2,7 @@
 import request from "request"
 import express from "express"
 import bodyParser from "body-parser"
+import cors from "cors"
 
 // # COMPONENTS IMPORTS //
 import Blockchain from "../ledger/blockchain/blockchain"
@@ -14,6 +15,7 @@ import TransactionMiner from "../ledger/wallet/transaction-miner"
 import { routes } from "./config/routes"
 const app = express()
 app.use(bodyParser.json())
+app.use(cors())
 
 /////////////////////////////////////////////////////////////////////////////
 
@@ -80,7 +82,7 @@ app.get(routes.mineTransactions, (req, res) => {
   res.redirect(routes.blocks)
 })
 
-app.get("/api/wallet-info", (req, res) => {
+app.get(routes.walletInfo, (req, res) => {
   const address = wallet.publicKey
 
   res.json({
