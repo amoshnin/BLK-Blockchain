@@ -1,0 +1,11 @@
+// # PLUGINS IMPORTS //
+
+// # COMPONENTS IMPORTS //
+
+// # EXTRA IMPORTS //
+
+/////////////////////////////////////////////////////////////////////////////
+
+export default function Index() {
+  return <div></div>
+}
